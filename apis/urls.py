@@ -27,5 +27,8 @@ urlpatterns = [
     path('ad-ratios/', get_all_ad_ratio),
     path('todays-advance-decline-neutral/', get_todays_adn),
     path('todays-trade-value-volume/', get_todays_tvv),
+    path('top-5-turnover/', get_top_5_turnover),
+    path('top-5-gainer/', get_top_5_gainer),
+    path('top-5-loser/', get_top_5_loser),
     path('api-auth/', include('rest_framework.urls'))
 ]
