@@ -7,8 +7,10 @@ import pandas as pd
 from datetime import datetime
 from  bs4 import BeautifulSoup
 from bdshare import get_hist_data
+from django.views.decorators.cache import never_cache
 
 # Create your views here.
+@never_cache
 def sector_wise_volumes(request):  # crawl dse website and calculate sector wise volume data
     url = "https://www.dsebd.org/latest_share_price_scroll_by_ltp.php"
     df = pd.read_html(url)
@@ -48,6 +50,7 @@ def sector_wise_volumes(request):  # crawl dse website and calculate sector wise
 
     return JsonResponse({'data': sectorVolumePercentage})
 
+@never_cache
 def sector_wise_return(request): # crawl dse website and calculate sector wise return data
     url = "https://dsebd.org/dse_close_price.php"
     closePriceDataFrame=pd.read_html(url)
@@ -117,6 +120,7 @@ def extract_time(date):
     new_time = ""
     return time
 
+@never_cache
 def get_monthly_indices_data(market):
     url = "https://dsebd.org/php_graph/monthly_graph_index.php?type="+market+"&duration=1"
     pages = requests.get(url)
@@ -145,6 +149,7 @@ def get_monthly_indices_data(market):
     '''first , last, change, change(%)'''
     return indices
 
+@never_cache
 def ret_json_monthly_indices(indices):
     data = {
         "First Day Value": indices[0],
@@ -154,26 +159,28 @@ def ret_json_monthly_indices(indices):
     }
     return data
 
+@never_cache
 def get_dsex_monthly_indices():
     indices = get_monthly_indices_data('dseX')
     data = ret_json_monthly_indices(indices)
     return JsonResponse(data)
 
+@never_cache
 def get_dses_monthly_indices():
     indices = get_monthly_indices_data('dseS')
     data = ret_json_monthly_indices(indices)
     return JsonResponse(data)
-
+@never_cache
 def get_ds30_monthly_indices():
     indices = get_monthly_indices_data('ds30')
     data = ret_json_monthly_indices(indices)
     return JsonResponse(data)
-
+@never_cache
 def get_cdset_monthly_indices():
     indices = get_monthly_indices_data('cdset')
     data = ret_json_monthly_indices(indices)
     return JsonResponse(data)
-
+@never_cache
 def get_daily_indices_from_market(pageData, st):
     datapoints = list()
     # print(type(pageData))
@@ -199,7 +206,7 @@ def get_daily_indices_from_market(pageData, st):
         t_data = float(extract_data(t_data))
         mydata.append([time, t_data])
     return mydata
-
+@never_cache
 def daily_indices(market):
     web_url = "https://www.dsebd.org/"
     html = requests.get(web_url).content
@@ -208,23 +215,23 @@ def daily_indices(market):
     market_data = get_daily_indices_from_market(str(soup), market)
 
     return market_data
-
+@never_cache
 def get_dsex_daily_indices():
     indices = daily_indices('dsbi')
     return JsonResponse({'indices':indices})
-
+@never_cache
 def get_dses_daily_indices():
     indices = daily_indices('dses')
     return JsonResponse({'indices':indices})
-
+@never_cache
 def get_ds30_daily_indices():
     indices = daily_indices('ds30')
     return JsonResponse({'indices':indices})
-
+@never_cache
 def get_cdset_daily_indices():
     indices = daily_indices('cdset')
     return JsonResponse({'indices':indices})
-
+@never_cache
 def getPrevYearMonth():
     currentMonth = datetime.now().month
     currentYear = datetime.now().year
@@ -232,7 +239,7 @@ def getPrevYearMonth():
     prevYear = currentYear
     if prevMonth == 12: prevYear-=1
     return str(prevMonth), str(prevYear)
-
+@never_cache
 def count_mkt_aggr():
     num_of_days = [0, 31, 27, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     prevMonth, prevmonthYear = getPrevYearMonth()
@@ -257,7 +264,7 @@ def count_mkt_aggr():
     avg_market_cap, avg_traded_val, avg_num_of_trades, avg_trade_vol = tot_market_cap/days, tot_traded_val/days, tot_num_of_trades/days, tot_trade_vol/days
     market_aggr = avg_market_cap, avg_traded_val, avg_num_of_trades, avg_trade_vol
     return market_aggr
-
+@never_cache
 def get_avg_market_aggregate():
     mkt_aggr = count_mkt_aggr()
     data = {
@@ -267,7 +274,7 @@ def get_avg_market_aggregate():
         'Trade Volume': mkt_aggr[3]
     }
     return JsonResponse(data)
-
+@never_cache
 def count_specific_ad_ratio(cat):
     url = "https://www.dsebd.org/market-statistics.php"
     pages = requests.get(url)
@@ -288,7 +295,7 @@ def count_specific_ad_ratio(cat):
     if dc_num[0]: ad_ratio = ad_num[0]/dc_num[0]
     else: ad_ratio = min(1, ad_num[0])
     return ad_ratio
-
+@never_cache
 def get_all_ad_ratio():
     ad_ratios = {
         'All Category': count_specific_ad_ratio('All'),
@@ -298,7 +305,7 @@ def get_all_ad_ratio():
         'Z Category': count_specific_ad_ratio('Z'),
     }
     return JsonResponse(ad_ratios)
-
+@never_cache
 def extract_adn_val(lines):
     values = list()
     for line in lines:
@@ -310,7 +317,7 @@ def extract_adn_val(lines):
             i-=1
         values.append(int(val))
     return values
-
+@never_cache
 def todays_adn():
     url = "https://www.dsebd.org/"
     pages = requests.get(url)
@@ -331,7 +338,7 @@ def todays_adn():
 
     advance, decline, nutral = extract_adn_val(adn)
     return advance, decline, nutral
-
+@never_cache
 def get_todays_adn():
     advance, decline, neutral = todays_adn()
     data = {
@@ -341,7 +348,7 @@ def get_todays_adn():
     }
     return JsonResponse(data)
 
-
+@never_cache
 def extract_tvv_val(line):
     val = ""
     for i in line:
@@ -373,7 +380,7 @@ def todays_tvv():
     tot_value = float(extract_tvv_val(tvt[2]))
 
     return tot_trade, tot_volume, tot_value
-
+@never_cache
 def get_todays_tvv():
     trade, volume, value = todays_tvv
     tvv = {
@@ -382,7 +389,7 @@ def get_todays_tvv():
         'Total Value': value
     }
     return JsonResponse(tvv)
-
+@never_cache
 def top_5_turnover():
     '''returns top 5 firms based on last month's last days turover'''
     num_of_days = [0, 31, 27, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
@@ -391,9 +398,39 @@ def top_5_turnover():
     end_date = prevmonthYear + '-' + prevMonth + '-' + str(num_of_days[int(prevMonth)])
     start_date = prevmonthYear + '-' + prevMonth + '-01'
 
-    first_day_data = get_hist_data(start_date, start_date)
-    end_day_data = get_hist_data(end_date, end_date)
-    # print(first_day_data)
+    try:    
+        first_day_data = get_hist_data(start_date, start_date)
+    except:
+        first_day_data = []
+    while(len(first_day_data) == 0):
+        f_day += 1
+        start_date = start_date[:-2]
+        if len(str(f_day)) == 1:
+            start_date += '0'+str(f_day)
+        else:
+            start_date += str(f_day)
+        
+        try:    
+            first_day_data = get_hist_data(start_date, start_date)
+        except:
+            first_day_data = []
+
+    try:
+        end_day_data = get_hist_data(end_date, end_date)
+    except:
+        end_day_data = []
+    while(len(end_day_data)==0):
+        l_day -= 1
+        end_date = end_date[:-2]
+        if len(str(l_day)) == 1:
+            end_date += '0'+str(l_day)
+        else:
+            end_date += str(l_day)
+
+        try:
+            end_day_data = get_hist_data(end_date, end_date)
+        except:
+            end_day_data = []
 
     listOfFirms = list()
     for j in range(len(end_day_data)):
@@ -415,10 +452,10 @@ def top_5_turnover():
         top5Firms.append([listOfFirms[i][0], listOfFirms[i][3], listOfFirms[i][2]])
 
     return top5Firms
-
+@never_cache
 def get_top_5_turnover(self):
     return JsonResponse(top_5_turnover())
-
+@never_cache
 def top_5_gainer():
     '''returns top 5 firms based on last month's last days turover'''
     num_of_days = [0, 31, 27, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
@@ -427,9 +464,39 @@ def top_5_gainer():
     end_date = prevmonthYear + '-' + prevMonth + '-' + str(num_of_days[int(prevMonth)])
     start_date = prevmonthYear + '-' + prevMonth + '-01'
 
-    first_day_data = get_hist_data(start_date, start_date)
-    end_day_data = get_hist_data(end_date, end_date)
-    # print(first_day_data)
+    try:    
+        first_day_data = get_hist_data(start_date, start_date)
+    except:
+        first_day_data = []
+    while(len(first_day_data) == 0):
+        f_day += 1
+        start_date = start_date[:-2]
+        if len(str(f_day)) == 1:
+            start_date += '0'+str(f_day)
+        else:
+            start_date += str(f_day)
+        
+        try:    
+            first_day_data = get_hist_data(start_date, start_date)
+        except:
+            first_day_data = []
+
+    try:
+        end_day_data = get_hist_data(end_date, end_date)
+    except:
+        end_day_data = []
+    while(len(end_day_data)==0):
+        l_day -= 1
+        end_date = end_date[:-2]
+        if len(str(l_day)) == 1:
+            end_date += '0'+str(l_day)
+        else:
+            end_date += str(l_day)
+
+        try:
+            end_day_data = get_hist_data(end_date, end_date)
+        except:
+            end_day_data = []
 
     listOfFirms = list()
     for j in range(len(end_day_data)):
@@ -451,21 +518,54 @@ def top_5_gainer():
         top5Firms.append([listOfFirms[i][0], listOfFirms[i][3], listOfFirms[i][2]])
 
     return top5Firms
-
+@never_cache
 def get_top_5_gainer(self):
     return JsonResponse(top_5_gainer())
-
+@never_cache
 def top_5_loser():
     '''returns top 5 firms based on last month's last days turover'''
     num_of_days = [0, 31, 27, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     prevMonth, prevmonthYear = getPrevYearMonth()
     if len(prevMonth) == 1 : prevMonth = '0'+prevMonth
-    end_date = prevmonthYear + '-' + prevMonth + '-' + str(num_of_days[int(prevMonth)])
-    start_date = prevmonthYear + '-' + prevMonth + '-01'
+    l_day = num_of_days[int(prevMonth)]
+    f_day = 1
+    end_date = prevmonthYear + '-' + prevMonth + '-' + str(l_day)
+    start_date = prevmonthYear + '-' + prevMonth + '-0'+str(f_day)
 
-    first_day_data = get_hist_data(start_date, start_date)
-    end_day_data = get_hist_data(end_date, end_date)
-    # print(first_day_data)
+    try:    
+        first_day_data = get_hist_data(start_date, start_date)
+    except:
+        first_day_data = []
+    while(len(first_day_data) == 0):
+        f_day += 1
+        start_date = start_date[:-2]
+        if len(str(f_day)) == 1:
+            start_date += '0'+str(f_day)
+        else:
+            start_date += str(f_day)
+        
+        try:    
+            first_day_data = get_hist_data(start_date, start_date)
+        except:
+            first_day_data = []
+
+    try:
+        end_day_data = get_hist_data(end_date, end_date)
+    except:
+        end_day_data = []
+    while(len(end_day_data)==0):
+        l_day -= 1
+        end_date = end_date[:-2]
+        if len(str(l_day)) == 1:
+            end_date += '0'+str(l_day)
+        else:
+            end_date += str(l_day)
+
+        try:
+            end_day_data = get_hist_data(end_date, end_date)
+        except:
+            end_day_data = []
+
 
     listOfFirms = list()
     for j in range(len(end_day_data)):
@@ -487,6 +587,6 @@ def top_5_loser():
         top5Firms.append([listOfFirms[i][0], listOfFirms[i][3], listOfFirms[i][2]])
 
     return top5Firms
-
+@never_cache
 def get_top_5_loser(self):
-    return JsonResponse(top_5_loser())
+    return JsonResponse(top_5_loser(), safe=True)
