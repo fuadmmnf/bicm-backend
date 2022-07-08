@@ -97,6 +97,8 @@ def sector_wise_return(request): # crawl dse website and calculate sector wise r
     sectorReturnPercentage = {}
     for sectorOfCompany in sectorReturnCount: # calculate sector wise return percentage
         sectorReturnPercentage[sectorOfCompany] = (sectorReturnCount[sectorOfCompany] * 100) / totalReturn
+        
+    return JsonResponse({'data': sectorReturnPercentage})
 
 
 
