@@ -27,7 +27,6 @@ def pe_ratio(request):
     import math
     url = "https://dsebd.org/latest_PE.php"
     peDataFrame=pd.read_html(url)
-    peDataFrame=pd.read_html(url)
     desiredListOfColumns=['#',
     'Trade Code',
     'Close Price',
