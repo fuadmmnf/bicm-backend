@@ -13,7 +13,73 @@ from django.views.decorators.cache import never_cache
 
 @never_cache
 def pe_ratio(request):
-    pass
+    from lxml import html
+import requests
+import pandas as pd
+import math
+url = "https://dsebd.org/latest_PE.php"
+peDataFrame=pd.read_html(url)
+peDataFrame=pd.read_html(url)
+desiredListOfColumns=['#',
+ 'Trade Code',
+ 'Close Price',
+ 'YCP',
+ 'P/E 1*(Basic)',
+ 'P/E 2*(Diluted)',
+ 'P/E 3*(Basic)',
+ 'P/E 4*(Diluted)',
+ 'P/E 5*',
+ 'P/E 6*']
+i=0
+for part in peDataFrame:
+    if desiredListOfColumns==list(part.columns):
+        peDataFrame=part
+        break
+        
+        
+def isfloat(num):
+    try:
+        float(num)
+        return True
+    except ValueError:
+        return False
+sizeOfDataFrame=len(peDataFrame.index)
+returnList=list()
+for i in range(sizeOfDataFrame):
+    toAppend=peDataFrame.at[i, desiredListOfColumns[4]]
+    if not isfloat(toAppend):
+        returnList.append(0)
+    elif math.isnan(float(toAppend)):
+        returnList.append(0)
+    else:
+        returnList.append(float(toAppend))
+# creating companySectorDictionary by reading txt file
+
+sectorFile=open("companysector.txt", "r")
+sectorFlag=1
+currentSector=""
+companySectorDictionary={}
+for line in sectorFile:
+    if line=="\n":
+        sectorFlag=1
+    else:
+        line=line.strip()
+        if sectorFlag==1:
+            currentSector=line
+            sectorFlag=0
+        else:
+            companySectorDictionary[line]=currentSector
+# calculating return of each sector and putting in a dictionary sectorReturnCount
+
+sectorPECount={}
+size=len(peDataFrame.index)
+for i in range(size):
+    if peDataFrame.at[i, 'Trade Code'] in companySectorDictionary:
+        sectorOfCompany=companySectorDictionary[peDataFrame.at[i, 'Trade Code']]
+    if sectorOfCompany in sectorPECount:
+        sectorPECount[sectorOfCompany]+=float(returnList[i])
+    else:
+         sectorPECount[sectorOfCompany]=float(returnList[i])
 
 
 @never_cache
