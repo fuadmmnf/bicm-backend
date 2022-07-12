@@ -15,6 +15,7 @@ router = routers.DefaultRouter()
 urlpatterns = [
     path('volumes/', sector_wise_volumes),
     path('returns/', sector_wise_return),
+    path('pe-ratio/', pe_ratio),
     path('monthly-indices-dsex/', get_dsex_monthly_indices),
     path('monthly-indices-dses/', get_dses_monthly_indices),
     path('monthly-indices-ds30/', get_ds30_monthly_indices),
@@ -31,4 +32,5 @@ urlpatterns = [
     path('top-5-gainer/', get_top_5_gainer),
     path('top-5-loser/', get_top_5_loser),
     path('api-auth/', include('rest_framework.urls'))
+    
 ]

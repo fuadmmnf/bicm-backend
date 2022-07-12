@@ -10,6 +10,12 @@ from bdshare import get_hist_data
 from django.views.decorators.cache import never_cache
 
 # Create your views here.
+
+@never_cache
+def pe_ratio(request):
+    pass
+
+
 @never_cache
 def sector_wise_volumes(request):  # crawl dse website and calculate sector wise volume data
     from lxml import html
