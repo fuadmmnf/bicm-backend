@@ -13,60 +13,60 @@ from django.views.decorators.cache import never_cache
 @never_cache
 def sector_wise_volumes(request):  # crawl dse website and calculate sector wise volume data
     from lxml import html
-import requests
-import pandas as pd
-url = "https://www.dsebd.org/latest_share_price_scroll_by_ltp.php"
-dataframe=pd.read_html(url)
+    import requests
+    import pandas as pd
+    url = "https://www.dsebd.org/latest_share_price_scroll_by_ltp.php"
+    dataframe=pd.read_html(url)
 
-desiredListOfColumns=['#',
- 'TRADING CODE',
- 'LTP*',
- 'HIGH',
- 'LOW',
- 'CLOSEP*',
- 'YCP*',
- 'CHANGE',
- 'TRADE',
- 'VALUE (mn)',
- 'VOLUME']
+    desiredListOfColumns=['#',
+    'TRADING CODE',
+    'LTP*',
+    'HIGH',
+    'LOW',
+    'CLOSEP*',
+    'YCP*',
+    'CHANGE',
+    'TRADE',
+    'VALUE (mn)',
+    'VOLUME']
 
-for part in dataframe:
-    if desiredListOfColumns==list(part.columns):
-        dataframe=part
-        break
-totalVolume=0
-for i in range(384):
-    totalVolume=totalVolume+dataframe.iat[i, 10]
-# creating companySectorDictionary by reading txt file
+    for part in dataframe:
+        if desiredListOfColumns==list(part.columns):
+            dataframe=part
+            break
+    totalVolume=0
+    for i in range(384):
+        totalVolume=totalVolume+dataframe.iat[i, 10]
+    # creating companySectorDictionary by reading txt file
 
-sectorFile=open("companysector.txt", "r")
-sectorFlag=1
-currentSector=""
-companySectorDictionary={}
-for line in sectorFile:
-    if line=="\n":
-        sectorFlag=1
-    else:
-        line=line.strip()
-        if sectorFlag==1:
-            currentSector=line
-            sectorFlag=0
+    sectorFile=open("companysector.txt", "r")
+    sectorFlag=1
+    currentSector=""
+    companySectorDictionary={}
+    for line in sectorFile:
+        if line=="\n":
+            sectorFlag=1
         else:
-            companySectorDictionary[line]=currentSector
-# calculating volume of each sector in putting in a dictionary sectorVolumeCount
+            line=line.strip()
+            if sectorFlag==1:
+                currentSector=line
+                sectorFlag=0
+            else:
+                companySectorDictionary[line]=currentSector
+    # calculating volume of each sector in putting in a dictionary sectorVolumeCount
 
-sectorVolumeCount={}
-size=len(dataframe.index)
-for i in range(size):
-    if dataframe.at[i, 'TRADING CODE'] in companySectorDictionary:
-        sectorOfCompany=companySectorDictionary[dataframe.at[i, 'TRADING CODE']]
-    if sectorOfCompany in sectorVolumeCount:
-        sectorVolumeCount[sectorOfCompany]=sectorVolumeCount[sectorOfCompany]+dataframe.at[i, 'VOLUME']
-    else:
-         sectorVolumeCount[sectorOfCompany]=dataframe.at[i, 'VOLUME']
-sectorVolumePercentage={}
-for sectorOfCompany in sectorVolumeCount:
-    sectorVolumePercentage[sectorOfCompany]=(sectorVolumeCount[sectorOfCompany]*100)/totalVolume
+    sectorVolumeCount={}
+    size=len(dataframe.index)
+    for i in range(size):
+        if dataframe.at[i, 'TRADING CODE'] in companySectorDictionary:
+            sectorOfCompany=companySectorDictionary[dataframe.at[i, 'TRADING CODE']]
+        if sectorOfCompany in sectorVolumeCount:
+            sectorVolumeCount[sectorOfCompany]=sectorVolumeCount[sectorOfCompany]+dataframe.at[i, 'VOLUME']
+        else:
+            sectorVolumeCount[sectorOfCompany]=dataframe.at[i, 'VOLUME']
+    sectorVolumePercentage={}
+    for sectorOfCompany in sectorVolumeCount:
+        sectorVolumePercentage[sectorOfCompany]=(sectorVolumeCount[sectorOfCompany]*100)/totalVolume
 
 
     return JsonResponse({'data': sectorVolumePercentage})
