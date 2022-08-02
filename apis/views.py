@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from lxml import html
-from numpy import indices
+# from lxml import html
+# from numpy import indices
 import requests
 import pandas as pd
 from datetime import datetime
@@ -499,6 +499,8 @@ def top_5_turnover():
     num_of_days = [0, 31, 27, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     prevMonth, prevmonthYear = getPrevYearMonth()
     if len(prevMonth) == 1 : prevMonth = '0'+prevMonth
+    l_day = num_of_days[int(prevMonth)]
+    f_day = 1
     end_date = prevmonthYear + '-' + prevMonth + '-' + str(num_of_days[int(prevMonth)])
     start_date = prevmonthYear + '-' + prevMonth + '-01'
 
@@ -566,6 +568,8 @@ def top_5_gainer():
     num_of_days = [0, 31, 27, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     prevMonth, prevmonthYear = getPrevYearMonth()
     if len(prevMonth) == 1 : prevMonth = '0'+prevMonth
+    l_day = num_of_days[int(prevMonth)]
+    f_day = 1
     end_date = prevmonthYear + '-' + prevMonth + '-' + str(num_of_days[int(prevMonth)])
     start_date = prevmonthYear + '-' + prevMonth + '-01'
 
