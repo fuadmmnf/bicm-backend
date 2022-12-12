@@ -4,7 +4,7 @@ from django.http import JsonResponse
 # from numpy import indices
 import requests
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
 from  bs4 import BeautifulSoup
 from bdshare import get_hist_data
 from django.views.decorators.cache import never_cache
@@ -496,45 +496,36 @@ def get_todays_tvv(request):
 
 def top_5_turnover():
     '''returns top 5 firms based on last month's last days turover'''
-    num_of_days = [0, 31, 27, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    prevMonth, prevmonthYear = getPrevYearMonth()
-    if len(prevMonth) == 1 : prevMonth = '0'+prevMonth
-    l_day = num_of_days[int(prevMonth)]
-    f_day = 1
-    end_date = prevmonthYear + '-' + prevMonth + '-' + str(num_of_days[int(prevMonth)])
-    start_date = prevmonthYear + '-' + prevMonth + '-01'
+    today = datetime.today()
+    yesterday = today - timedelta(days = 1)
+    today = today.strftime("%Y-%m-%d")
+    yesterday = yesterday.strftime("%Y-%m-%d")
 
+    time = datetime.now()
+    time = time.strftime("%H")
+    if int(time)<=14:
+        today = yesterday
+        yesterday = today - timedelta(days=1)
     try:    
-        first_day_data = get_hist_data(start_date, start_date)
+        first_day_data = get_hist_data(today, today)
     except:
         first_day_data = []
     while(len(first_day_data) == 0):
-        f_day += 1
-        start_date = start_date[:-2]
-        if len(str(f_day)) == 1:
-            start_date += '0'+str(f_day)
-        else:
-            start_date += str(f_day)
-        
+        today = yesterday
+        yesterday = today - timedelta(days = 1)
         try:    
-            first_day_data = get_hist_data(start_date, start_date)
+            first_day_data = get_hist_data(today, today)
         except:
             first_day_data = []
-
+    # print(first_day_data)
     try:
-        end_day_data = get_hist_data(end_date, end_date)
+        end_day_data = get_hist_data(yesterday, yesterday)
     except:
         end_day_data = []
     while(len(end_day_data)==0):
-        l_day -= 1
-        end_date = end_date[:-2]
-        if len(str(l_day)) == 1:
-            end_date += '0'+str(l_day)
-        else:
-            end_date += str(l_day)
-
+        yesterday = yesterday - timedelta(days=1)
         try:
-            end_day_data = get_hist_data(end_date, end_date)
+            end_day_data = get_hist_data(yesterday, yesterday)
         except:
             end_day_data = []
 
@@ -565,45 +556,36 @@ def get_top_5_turnover(self):
 
 def top_5_gainer():
     '''returns top 5 firms based on last month's last days turover'''
-    num_of_days = [0, 31, 27, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    prevMonth, prevmonthYear = getPrevYearMonth()
-    if len(prevMonth) == 1 : prevMonth = '0'+prevMonth
-    l_day = num_of_days[int(prevMonth)]
-    f_day = 1
-    end_date = prevmonthYear + '-' + prevMonth + '-' + str(num_of_days[int(prevMonth)])
-    start_date = prevmonthYear + '-' + prevMonth + '-01'
+    today = datetime.today()
+    yesterday = today - timedelta(days = 1)
+    today = today.strftime("%Y-%m-%d")
+    yesterday = yesterday.strftime("%Y-%m-%d")
 
+    time = datetime.now()
+    time = time.strftime("%H")
+    if int(time)<=14:
+        today = yesterday
+        yesterday = today - timedelta(days=1)
     try:    
-        first_day_data = get_hist_data(start_date, start_date)
+        first_day_data = get_hist_data(today, today)
     except:
         first_day_data = []
     while(len(first_day_data) == 0):
-        f_day += 1
-        start_date = start_date[:-2]
-        if len(str(f_day)) == 1:
-            start_date += '0'+str(f_day)
-        else:
-            start_date += str(f_day)
-        
+        today = yesterday
+        yesterday = today - timedelta(days = 1)
         try:    
-            first_day_data = get_hist_data(start_date, start_date)
+            first_day_data = get_hist_data(today, today)
         except:
             first_day_data = []
-
+    # print(first_day_data)
     try:
-        end_day_data = get_hist_data(end_date, end_date)
+        end_day_data = get_hist_data(yesterday, yesterday)
     except:
         end_day_data = []
     while(len(end_day_data)==0):
-        l_day -= 1
-        end_date = end_date[:-2]
-        if len(str(l_day)) == 1:
-            end_date += '0'+str(l_day)
-        else:
-            end_date += str(l_day)
-
+        yesterday = yesterday - timedelta(days=1)
         try:
-            end_day_data = get_hist_data(end_date, end_date)
+            end_day_data = get_hist_data(yesterday, yesterday)
         except:
             end_day_data = []
 
@@ -634,48 +616,38 @@ def get_top_5_gainer(self):
 
 def top_5_loser():
     '''returns top 5 firms based on last month's last days turover'''
-    num_of_days = [0, 31, 27, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    prevMonth, prevmonthYear = getPrevYearMonth()
-    if len(prevMonth) == 1 : prevMonth = '0'+prevMonth
-    l_day = num_of_days[int(prevMonth)]
-    f_day = 1
-    end_date = prevmonthYear + '-' + prevMonth + '-' + str(l_day)
-    start_date = prevmonthYear + '-' + prevMonth + '-0'+str(f_day)
+    today = datetime.today()
+    yesterday = today - timedelta(days = 1)
+    today = today.strftime("%Y-%m-%d")
+    yesterday = yesterday.strftime("%Y-%m-%d")
 
+    time = datetime.now()
+    time = time.strftime("%H")
+    if int(time)<=14:
+        today = yesterday
+        yesterday = today - timedelta(days=1)
     try:    
-        first_day_data = get_hist_data(start_date, start_date)
+        first_day_data = get_hist_data(today, today)
     except:
         first_day_data = []
     while(len(first_day_data) == 0):
-        f_day += 1
-        start_date = start_date[:-2]
-        if len(str(f_day)) == 1:
-            start_date += '0'+str(f_day)
-        else:
-            start_date += str(f_day)
-        
+        today = yesterday
+        yesterday = today - timedelta(days = 1)
         try:    
-            first_day_data = get_hist_data(start_date, start_date)
+            first_day_data = get_hist_data(today, today)
         except:
             first_day_data = []
-
+    # print(first_day_data)
     try:
-        end_day_data = get_hist_data(end_date, end_date)
+        end_day_data = get_hist_data(yesterday, yesterday)
     except:
         end_day_data = []
     while(len(end_day_data)==0):
-        l_day -= 1
-        end_date = end_date[:-2]
-        if len(str(l_day)) == 1:
-            end_date += '0'+str(l_day)
-        else:
-            end_date += str(l_day)
-
+        yesterday = yesterday - timedelta(days=1)
         try:
-            end_day_data = get_hist_data(end_date, end_date)
+            end_day_data = get_hist_data(yesterday, yesterday)
         except:
             end_day_data = []
-
 
     listOfFirms = list()
     for j in range(len(end_day_data)):

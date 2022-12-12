@@ -1,5 +1,5 @@
-
-  
+/test
+.gitignore 
 venv
 __pycache__
 .idea
@@ -8,3 +8,6 @@ out.txt
 .DS_Store
 test_systems/FSE19-submission-material-DIG
 test_systems/source_codes
+Lib
+pyvenv.cfg
+/Scripts
