@@ -503,9 +503,9 @@ def top_5_turnover():
 
     time = datetime.now()
     time = time.strftime("%H")
-    if int(time)<=14:
-        today = yesterday
-        yesterday = today - timedelta(days=1)
+#     if int(time)<=14:
+#         today = yesterday
+#         yesterday = today - timedelta(days=1)
     try:    
         first_day_data = get_hist_data(today, today)
     except:
@@ -563,9 +563,9 @@ def top_5_gainer():
 
     time = datetime.now()
     time = time.strftime("%H")
-    if int(time)<=14:
-        today = yesterday
-        yesterday = today - timedelta(days=1)
+#     if int(time)<=14:
+#         today = yesterday
+#         yesterday = today - timedelta(days=1)
     try:    
         first_day_data = get_hist_data(today, today)
     except:
@@ -623,9 +623,9 @@ def top_5_loser():
 
     time = datetime.now()
     time = time.strftime("%H")
-    if int(time)<=14:
-        today = yesterday
-        yesterday = today - timedelta(days=1)
+#     if int(time)<=14:
+#         today = yesterday
+#         yesterday = today - timedelta(days=1)
     try:    
         first_day_data = get_hist_data(today, today)
     except:
