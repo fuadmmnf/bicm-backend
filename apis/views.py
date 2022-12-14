@@ -496,10 +496,10 @@ def get_todays_tvv(request):
 
 def top_5_turnover():
     '''returns top 5 firms based on last month's last days turover'''
-    today = datetime.today()
-    yesterday = today - timedelta(days = 1)
-    today = today.strftime("%Y-%m-%d")
-    yesterday = yesterday.strftime("%Y-%m-%d")
+    today_s = datetime.today()
+    yesterday_s = today_s - timedelta(days = 1)
+    today = today_s.strftime("%Y-%m-%d")
+    yesterday = yesterday_s.strftime("%Y-%m-%d")
 
     time = datetime.now()
     time = time.strftime("%H")
@@ -508,11 +508,14 @@ def top_5_turnover():
 #         yesterday = today - timedelta(days=1)
     try:    
         first_day_data = get_hist_data(today, today)
+        # print('hi')
     except:
         first_day_data = []
     while(len(first_day_data) == 0):
-        today = yesterday
-        yesterday = today - timedelta(days = 1)
+        today_s = today_s - timedelta(days=1)
+        yesterday_s = today_s - timedelta(days = 1)
+        today = today_s.strftime("%Y-%m-%d")
+        yesterday = yesterday_s.strftime("%Y-%m-%d")
         try:    
             first_day_data = get_hist_data(today, today)
         except:
@@ -523,12 +526,13 @@ def top_5_turnover():
     except:
         end_day_data = []
     while(len(end_day_data)==0):
-        yesterday = yesterday - timedelta(days=1)
+        yesterday_s = yesterday_s - timedelta(days=1)
+        yesterday = yesterday_s.strftime("%Y-%m-%d")
         try:
             end_day_data = get_hist_data(yesterday, yesterday)
         except:
             end_day_data = []
-
+    # print(end_day_data)
     listOfFirms = list()
     for j in range(len(end_day_data)):
         for i in range(len(first_day_data)):
@@ -556,10 +560,10 @@ def get_top_5_turnover(self):
 
 def top_5_gainer():
     '''returns top 5 firms based on last month's last days turover'''
-    today = datetime.today()
-    yesterday = today - timedelta(days = 1)
-    today = today.strftime("%Y-%m-%d")
-    yesterday = yesterday.strftime("%Y-%m-%d")
+    today_s = datetime.today()
+    yesterday_s = today_s - timedelta(days = 1)
+    today = today_s.strftime("%Y-%m-%d")
+    yesterday = yesterday_s.strftime("%Y-%m-%d")
 
     time = datetime.now()
     time = time.strftime("%H")
@@ -568,11 +572,14 @@ def top_5_gainer():
 #         yesterday = today - timedelta(days=1)
     try:    
         first_day_data = get_hist_data(today, today)
+        # print('hi')
     except:
         first_day_data = []
     while(len(first_day_data) == 0):
-        today = yesterday
-        yesterday = today - timedelta(days = 1)
+        today_s = today_s - timedelta(days=1)
+        yesterday_s = today_s - timedelta(days = 1)
+        today = today_s.strftime("%Y-%m-%d")
+        yesterday = yesterday_s.strftime("%Y-%m-%d")
         try:    
             first_day_data = get_hist_data(today, today)
         except:
@@ -583,11 +590,13 @@ def top_5_gainer():
     except:
         end_day_data = []
     while(len(end_day_data)==0):
-        yesterday = yesterday - timedelta(days=1)
+        yesterday_s = yesterday_s - timedelta(days=1)
+        yesterday = yesterday_s.strftime("%Y-%m-%d")
         try:
             end_day_data = get_hist_data(yesterday, yesterday)
         except:
             end_day_data = []
+    # print(end_day_data)
 
     listOfFirms = list()
     for j in range(len(end_day_data)):
@@ -616,10 +625,10 @@ def get_top_5_gainer(self):
 
 def top_5_loser():
     '''returns top 5 firms based on last month's last days turover'''
-    today = datetime.today()
-    yesterday = today - timedelta(days = 1)
-    today = today.strftime("%Y-%m-%d")
-    yesterday = yesterday.strftime("%Y-%m-%d")
+    today_s = datetime.today()
+    yesterday_s = today_s - timedelta(days = 1)
+    today = today_s.strftime("%Y-%m-%d")
+    yesterday = yesterday_s.strftime("%Y-%m-%d")
 
     time = datetime.now()
     time = time.strftime("%H")
@@ -628,11 +637,14 @@ def top_5_loser():
 #         yesterday = today - timedelta(days=1)
     try:    
         first_day_data = get_hist_data(today, today)
+        # print('hi')
     except:
         first_day_data = []
     while(len(first_day_data) == 0):
-        today = yesterday
-        yesterday = today - timedelta(days = 1)
+        today_s = today_s - timedelta(days=1)
+        yesterday_s = today_s - timedelta(days = 1)
+        today = today_s.strftime("%Y-%m-%d")
+        yesterday = yesterday_s.strftime("%Y-%m-%d")
         try:    
             first_day_data = get_hist_data(today, today)
         except:
@@ -643,11 +655,13 @@ def top_5_loser():
     except:
         end_day_data = []
     while(len(end_day_data)==0):
-        yesterday = yesterday - timedelta(days=1)
+        yesterday_s = yesterday_s - timedelta(days=1)
+        yesterday = yesterday_s.strftime("%Y-%m-%d")
         try:
             end_day_data = get_hist_data(yesterday, yesterday)
         except:
             end_day_data = []
+    # print(end_day_data)
 
     listOfFirms = list()
     for j in range(len(end_day_data)):
