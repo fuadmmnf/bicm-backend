@@ -501,18 +501,12 @@ def top_5_turnover():
     today = today_s.strftime("%Y-%m-%d")
     yesterday = yesterday_s.strftime("%Y-%m-%d")
 
-    time = datetime.now()
-    time = time.strftime("%H")
-#     if int(time)<=14:
-#         today = yesterday
-#         yesterday = today - timedelta(days=1)
     try:    
         first_day_data = get_hist_data(today, today)
-        # print('hi')
     except:
         first_day_data = []
     while(len(first_day_data) == 0):
-        today_s = today_s - timedelta(days=1)
+        today_s = yesterday_s
         yesterday_s = today_s - timedelta(days = 1)
         today = today_s.strftime("%Y-%m-%d")
         yesterday = yesterday_s.strftime("%Y-%m-%d")
@@ -532,7 +526,7 @@ def top_5_turnover():
             end_day_data = get_hist_data(yesterday, yesterday)
         except:
             end_day_data = []
-    # print(end_day_data)
+
     listOfFirms = list()
     for j in range(len(end_day_data)):
         for i in range(len(first_day_data)):
@@ -542,12 +536,12 @@ def top_5_turnover():
                     # cur_data = get_hist_data(end_date, end_date, first_day_data.symbol[i])
                     # turnover = (float(cur_data.ycp[j]) - float(cur_data.close[j])) / float(cur_data.close[j])
                     turnover = (float(end_day_data.ycp[j]) - float(end_day_data.close[j])) / float(end_day_data.close[j])
-                    change = (float(end_day_data.value[j]) - float(first_day_data.value[i])) / float(first_day_data.value[i])
-                    listOfFirms.append([first_day_data.symbol[i], turnover, change*100, float(end_day_data.value[j])])
+                    change = -1 * (float(end_day_data.value[j]) - float(first_day_data.value[i])) / float(first_day_data.value[i])
+                    listOfFirms.append([first_day_data.symbol[i], turnover, change*100, float(first_day_data.value[j])])
                     break
 
     # print(listOfFirms)
-    listOfFirms.sort(reverse = True, key = lambda x: x[1])
+    listOfFirms.sort(reverse = True, key = lambda x: x[2])
     top5Firms = list()
     for i in range(5):
         top5Firms.append([listOfFirms[i][0], listOfFirms[i][3], listOfFirms[i][2]])
@@ -559,17 +553,9 @@ def get_top_5_turnover(self):
     return JsonResponse(top_5_turnover(), safe=False)
 
 def top_5_gainer():
-    '''returns top 5 firms based on last month's last days turover'''
+    '''returns top 5 firms based on price change'''
     today_s = datetime.today()
-    yesterday_s = today_s - timedelta(days = 1)
     today = today_s.strftime("%Y-%m-%d")
-    yesterday = yesterday_s.strftime("%Y-%m-%d")
-
-    time = datetime.now()
-    time = time.strftime("%H")
-#     if int(time)<=14:
-#         today = yesterday
-#         yesterday = today - timedelta(days=1)
     try:    
         first_day_data = get_hist_data(today, today)
         # print('hi')
@@ -577,64 +563,28 @@ def top_5_gainer():
         first_day_data = []
     while(len(first_day_data) == 0):
         today_s = today_s - timedelta(days=1)
-        yesterday_s = today_s - timedelta(days = 1)
         today = today_s.strftime("%Y-%m-%d")
-        yesterday = yesterday_s.strftime("%Y-%m-%d")
         try:    
             first_day_data = get_hist_data(today, today)
         except:
             first_day_data = []
-    # print(first_day_data)
-    try:
-        end_day_data = get_hist_data(yesterday, yesterday)
-    except:
-        end_day_data = []
-    while(len(end_day_data)==0):
-        yesterday_s = yesterday_s - timedelta(days=1)
-        yesterday = yesterday_s.strftime("%Y-%m-%d")
-        try:
-            end_day_data = get_hist_data(yesterday, yesterday)
-        except:
-            end_day_data = []
-    # print(end_day_data)
 
     listOfFirms = list()
-    for j in range(len(end_day_data)):
-        for i in range(len(first_day_data)):
-            if first_day_data.symbol[i] == end_day_data.symbol[j]:
-                if float(first_day_data.value[i])!= 0:
-                    '''uncomment to get top firm based on latest turnover'''
-                    # cur_data = get_hist_data(end_date, end_date, first_day_data.symbol[i])
-                    # turnover = (float(cur_data.ycp[j]) - float(cur_data.close[j])) / float(cur_data.close[j])
-                    turnover = (float(end_day_data.close[j]) - float(first_day_data.ycp[i])) / float(first_day_data.ycp[i])
-                    change = (float(end_day_data.value[j]) - float(first_day_data.value[i])) / float(first_day_data.value[i])
-                    listOfFirms.append([first_day_data.symbol[i], turnover, change*100, float(end_day_data.value[j])])
-                    break
-
-    # print(listOfFirms)
-    listOfFirms.sort(reverse = True, key = lambda x: x[1])
-    top5Firms = list()
-    for i in range(5):
-        top5Firms.append([listOfFirms[i][0], listOfFirms[i][3], listOfFirms[i][2]])
-
-    return top5Firms
+    for i in range(len(first_day_data)):
+        if float(first_day_data.ltp[i]):
+            change =  -1 * (float(first_day_data.ycp[i]) - float(first_day_data.close[i])) / float(first_day_data.close[i])
+            listOfFirms.append([first_day_data.symbol[i], first_day_data.value[i], change*100])
+    listOfFirms.sort(reverse=True, key = lambda x: x[2])
+    return listOfFirms[:5]
 @never_cache
 def get_top_5_gainer(self):
     return JsonResponse(top_5_gainer(), safe=False)
 
 
 def top_5_loser():
-    '''returns top 5 firms based on last month's last days turover'''
+    '''returns top 5 firms based on price change'''
     today_s = datetime.today()
-    yesterday_s = today_s - timedelta(days = 1)
     today = today_s.strftime("%Y-%m-%d")
-    yesterday = yesterday_s.strftime("%Y-%m-%d")
-
-    time = datetime.now()
-    time = time.strftime("%H")
-#     if int(time)<=14:
-#         today = yesterday
-#         yesterday = today - timedelta(days=1)
     try:    
         first_day_data = get_hist_data(today, today)
         # print('hi')
@@ -642,47 +592,19 @@ def top_5_loser():
         first_day_data = []
     while(len(first_day_data) == 0):
         today_s = today_s - timedelta(days=1)
-        yesterday_s = today_s - timedelta(days = 1)
         today = today_s.strftime("%Y-%m-%d")
-        yesterday = yesterday_s.strftime("%Y-%m-%d")
         try:    
             first_day_data = get_hist_data(today, today)
         except:
             first_day_data = []
-    # print(first_day_data)
-    try:
-        end_day_data = get_hist_data(yesterday, yesterday)
-    except:
-        end_day_data = []
-    while(len(end_day_data)==0):
-        yesterday_s = yesterday_s - timedelta(days=1)
-        yesterday = yesterday_s.strftime("%Y-%m-%d")
-        try:
-            end_day_data = get_hist_data(yesterday, yesterday)
-        except:
-            end_day_data = []
-    # print(end_day_data)
 
     listOfFirms = list()
-    for j in range(len(end_day_data)):
-        for i in range(len(first_day_data)):
-            if first_day_data.symbol[i] == end_day_data.symbol[j]:
-                if float(first_day_data.value[i])!= 0:
-                    '''uncomment to get top firm based on latest turnover'''
-                    # cur_data = get_hist_data(end_date, end_date, first_day_data.symbol[i])
-                    # turnover = (float(cur_data.ycp[j]) - float(cur_data.close[j])) / float(cur_data.close[j])
-                    turnover = (float(first_day_data.ycp[i]) - float(end_day_data.close[j])) / float(end_day_data.close[j])
-                    change = (float(end_day_data.value[j]) - float(first_day_data.value[i])) / float(first_day_data.value[i])
-                    listOfFirms.append([first_day_data.symbol[i], turnover, change*100, float(end_day_data.value[j])])
-                    break
-
-    # print(listOfFirms)
-    listOfFirms.sort(reverse = True, key = lambda x: x[1])
-    top5Firms = list()
-    for i in range(5):
-        top5Firms.append([listOfFirms[i][0], listOfFirms[i][3], listOfFirms[i][2]])
-
-    return top5Firms
+    for i in range(len(first_day_data)):
+        if float(first_day_data.ltp[i]):
+            change = -1 * (float(first_day_data.ycp[i]) - float(first_day_data.close[i])) / float(first_day_data.close[i])
+            listOfFirms.append([first_day_data.symbol[i], first_day_data.value[i], change*100])
+    listOfFirms.sort(reverse=False, key = lambda x: x[2])
+    return listOfFirms[:5]
 
 @never_cache
 def get_top_5_loser(self):
